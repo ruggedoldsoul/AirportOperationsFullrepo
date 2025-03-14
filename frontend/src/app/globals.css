@@ -1,0 +1,70 @@
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Dark Mode Support */
+@custom-variant dark (&:is(.dark *));
+
+/* Theme Variables */
+:root {
+  --color-border: hsl(var(--border));
+  --color-menu-arrow: hsl(var(--menu-arrow));
+  --color-menu-arrow-active: hsl(var(--menu-arrow-active));
+  --color-menu-foreground: hsl(var(--menu-foreground));
+
+  --color-default-50: hsl(var(--default-50));
+  --color-default-100: hsl(var(--default-100));
+  --color-default-200: hsl(var(--default-200));
+  --color-default-300: hsl(var(--default-300));
+  --color-default-400: hsl(var(--default-400));
+  --color-default-500: hsl(var(--default-500));
+  --color-default-600: hsl(var(--default-600));
+  --color-default-700: hsl(var(--default-700));
+  --color-default-800: hsl(var(--default-800));
+  --color-default-900: hsl(var(--default-900));
+  --color-default: hsl(var(--default));
+  --color-default-foreground: hsl(var(--default-foreground));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+}
+
+/* Theme Presets */
+.theme-dark {
+  --sidebar: 222.2 84% 4.9%;
+  --header: 222.2 84% 4.9%;
+}
+.theme-rose {
+  --sidebar: 341, 64%, 43%;
+  --header: 341, 64%, 43%;
+  --secondary: 339, 60%, 51%;
+}
+.theme-gray {
+  --sidebar: 210, 10%, 23%;
+  --header: 210, 10%, 23%;
+  --secondary: 207, 14%, 31%;
+}
+.theme-steel-blue {
+  --sidebar: 226, 36%, 39%;
+  --header: 226, 36%, 39%;
+  --secondary: 224, 40%, 48%;
+}
+.theme-purple {
+  --sidebar: 299, 56%, 19%;
+  --header: 299, 56%, 19%;
+  --secondary: 299, 40%, 28%;
+}
+.theme-redwood {
+  --sidebar: 345, 24%, 29%;
+  --header: 345, 24%, 29%;
+  --secondary: 346, 26%, 35%;
+}
+
+/* Apply Global Styles */
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

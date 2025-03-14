@@ -1,0 +1,29 @@
+
+name: CI/CD Pipeline
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: |
+          cd frontend
+          npm install
+          cd ../backend
+          dotnet restore
+      - name: Build Next.js
+        run: |
+          cd frontend
+          npm run build
+      - name: Deploy to Vercel
+        run: |
+          npm install -g vercel
+          vercel --token ${{ secrets.VERCEL_TOKEN }} --prod
+      - name: Deploy .NET API to Azure
+        run: |
+          az webapp up --name airport-api --resource-group MyResourceGroup --runtime "DOTNET:8"
