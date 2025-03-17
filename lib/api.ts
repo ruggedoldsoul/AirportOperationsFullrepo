@@ -30,7 +30,15 @@ interface RequestOptions extends RequestInit {
 }
 
 class ApiClient {
-  protected baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  protected baseUrl: string;
+
+  constructor() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      throw new Error('NEXT_PUBLIC_API_URL environment variable is not set');
+    }
+    this.baseUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+  }
 
   protected async fetch<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const { requiresAuth = true, ...fetchOptions } = options;
@@ -39,38 +47,45 @@ class ApiClient {
     headers.set('Content-Type', 'application/json');
 
     if (requiresAuth) {
-      // Get the session token from wherever you store it (localStorage, cookie, etc.)
       const session = await this.getSession();
       if (session?.token) {
         headers.set('Authorization', `Bearer ${session.token}`);
       }
     }
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      ...fetchOptions,
-      headers
-    });
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        ...fetchOptions,
+        headers,
+        // Add credentials for CORS requests
+        credentials: 'include'
+      });
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        // Handle unauthorized access
-        window.location.href = '/login';
-        throw new Error('Unauthorized access');
+      if (!response.ok) {
+        if (response.status === 401) {
+          window.location.href = '/login';
+          throw new Error('Unauthorized access');
+        }
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || `API Error: ${response.statusText}`);
       }
-      throw new Error(`API Error: ${response.statusText}`);
-    }
 
-    // Return null for 204 No Content responses
-    if (response.status === 204) {
-      return null as T;
-    }
+      if (response.status === 204) {
+        return null as T;
+      }
 
-    return response.json();
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        console.error('Network error: Unable to connect to the API server. Please check if the server is running.');
+        throw new Error('Network error: Unable to connect to the API server');
+      }
+      throw error;
+    }
   }
 
   private async getSession() {
     try {
-      // You can replace this with your actual session management logic
       const response = await fetch('/api/auth/session');
       if (response.ok) {
         return response.json();
